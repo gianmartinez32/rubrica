@@ -3,23 +3,26 @@ import Cookies from 'js-cookie';
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 import FormProduct from '../../components/FormProduct'
-import {  useNavigate } from 'react-router-dom'
+import { useAuth } from '../../context/AuthContext';
+import { setearMiles } from '../../utils/funcitions';
+import server from '../../utils/server';
 
 
 
 const Product = () => {
+    const { onLogout } = useAuth()
+
     const [SellState, setSellState] = useState({
         openDraver: false,
         idToEdit: null,
         sells: []
     })
-    const navigate = useNavigate()
 
     const handlerSellState = (name: string, value: any) => {
         setSellState((prev) => ({ ...prev, [name]: value }))
     }
-    const handlerDrawer = () => {
-        handlerSellState('openDraver', !SellState.openDraver)
+    const handlerDrawer = (value:boolean) => {
+        handlerSellState('openDraver', value)
     }
     const loadSell = async () => {
         try {
@@ -27,30 +30,39 @@ const Product = () => {
             const config = {
                 headers: {
                   Authorization: `${token}`,
+                   'content-type': 'application/json',
+                   'Access-Control-Allow-Origin': '*'
                 },
                 withCredentials: true,
               };
-            const response = await axios.get('http://localhost:5000/products', config)
+            const response = await axios.get(server.HOST+'/products', config)
             if (response.data.success) {
                 console.log(response.data.data)
-                handlerSellState('sells', response.data.data.map((venta) => ({ ...venta })))
+                handlerSellState('sells', response.data.data.map((venta:any) => ({ ...venta })))
             } else {
                 notification.warning({
                     message: response.data.message
                 })
+                if(response.data.message == '"Acceso no autorizado"'){
+                    onLogout()
+                }
             }
 
-        } catch (error) {
+        } catch (error:any) {
             console.log(error);
-            notification.error({
-                message: 'error tecnico'
-            })
+            if (error.response.status === 401) {
+                notification.warning({
+                  message: error.response.data.message
+                })
+                onLogout()
+      
+              }
         }
     }
 
     const deleteSell = async (id: number) => {
         try {
-            const response = await axios.delete(`http://localhost:5000/products/${id}`, { withCredentials: true})
+            const response = await axios.delete(`${server.HOST}/products/${id}`, { withCredentials: true})
             if (response.data.success) {
                 notification.success({
                     message: response.data.message
@@ -70,7 +82,7 @@ const Product = () => {
     }
     const editSell = (record: any) => {
         handlerSellState('idToEdit', record)
-        handlerDrawer()
+        handlerDrawer(true)
     }
 
     useEffect(() => {
@@ -86,20 +98,11 @@ const Product = () => {
                     <div style={{
                         width: '100%',
                         display: 'flex',
-                        justifyContent: 'start',
-                        marginBottom: '1rem'
-                    }}>
-                        <Button onClick={() => navigate('/home')} className='btn-main1' >Volver</Button>
-                    </div>
-                    <div style={{
-                        width: '100%',
-                        display: 'flex',
                         justifyContent: 'center',
                         marginBottom: '1rem'
                     }}>
                         <Typography style={{
                             fontWeight: 'bold',
-                            color: 'white',
                             fontSize: '2rem'
                         }}>Producto</Typography>
                     </div>
@@ -109,10 +112,10 @@ const Product = () => {
                         justifyContent: 'start',
                         marginBottom: '1rem'
                     }}>
-                        <Button className='btn-main1' onClick={handlerDrawer}>Crear</Button>
+                        <Button className='btn-main1' onClick={()=>handlerDrawer(true)}>Crear</Button>
 
                     </div>
-                    <Table pagination={{ pageSize: 5 }} dataSource={SellState.sells} columns={[
+                    <Table rootClassName='table-main' pagination={{ pageSize: 5 }} dataSource={SellState.sells} columns={[
                         {
                             dataIndex: 'Codigo',
                             title: 'Codigo de producto',
@@ -132,6 +135,7 @@ const Product = () => {
                             dataIndex: 'Precio',
                             title: 'Precio',
                             align: 'center',
+                            render:(value)=>setearMiles(value)
                         },
                         {
                             dataIndex: 'permitir_stock_negativo',
@@ -140,21 +144,28 @@ const Product = () => {
                             render: (value) => value ? 'Si' : 'No'
                         },
                         {
+                            dataIndex: 'Cantidad_en_stock',
+                            title: 'Cantidad en stock',
+                            align: 'center',
+                        },
+                        {
                             title: 'Acciones',
                             align: 'center',
-                            render: (value, record: any) => {
-                                return <>
-                                    <Button onClick={() => editSell(record)}>Editar</Button>
-                                    <Button onClick={() => deleteSell(record.Codigo_venta)}>Eliminar</Button>
-                                </>
+                            render: (_value, record: any) => {
+                                return <div style={{display:'flex', justifyContent:'center',gap:'1rem'}}>
+                                    <Button className='btn-main2' onClick={() => editSell(record)}>Editar</Button>
+                                    <Button className='btn-main2' onClick={() => deleteSell(record.Codigo)}>Eliminar</Button>
+                                </div>
                             }
                         }
                     ]} />
                 </Col>
             </Row>
-            <Drawer onClose={handlerDrawer} rootClassName='drawer-form' open={SellState.openDraver}>
+            <Drawer onClose={()=>{
+                editSell(null)
+                handlerDrawer(false)}} rootClassName='drawer-form' open={SellState.openDraver}>
                 <FormProduct record={SellState.idToEdit} onClose={() => {
-                    handlerDrawer()
+                    handlerDrawer(false)
                     loadSell()
                 }} />
             </Drawer>

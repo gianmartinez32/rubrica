@@ -1,8 +1,10 @@
-import { Button, Checkbox, Form, Input, Select, Typography, notification } from 'antd'
+import { Button, Checkbox, Form, Input,  Typography, notification } from 'antd'
 import { useForm } from 'antd/es/form/Form'
 import axios from 'axios'
-import React, { useEffect, useMemo, useState } from 'react'
+import  { useEffect,useState } from 'react'
 import Cookies from 'js-cookie';
+import { validateNumber } from '../utils/validations';
+import server from '../utils/server';
 
 
 
@@ -13,6 +15,7 @@ interface IProps {
 const FormProduct = ({ record, onClose }: IProps) => {
     const [form] = useForm()
     const [observer, setObserver] = useState(true)
+    const [loading, setLoading] = useState(false)
 
     const onFinish = async (fields: any) => {
         try {
@@ -23,11 +26,13 @@ const FormProduct = ({ record, onClose }: IProps) => {
             const config = {
                 headers: {
                   Authorization: `${token}`,
+                  'content-type': 'application/json',
+                  'Access-Control-Allow-Origin': '*'
                 },
                 withCredentials: true,
               };
-
-            const response = record ? await axios.put('http://localhost:5000/products', fields,config) : await axios.post('http://localhost:5000/products', fields, config)
+              setLoading(true)
+            const response = record ? await axios.put(server.HOST+'/products', fields,config) : await axios.post(server.HOST+'/products', fields, config)
             if (response.data.success) {
                 notification.success({
                     message: response.data.message,
@@ -43,20 +48,14 @@ const FormProduct = ({ record, onClose }: IProps) => {
             notification.error({
                 message: error.response.data.message,
             })
+        } finally{
+            setLoading(false)
         }
     }
 
 
 
     useEffect(() => {
-        /*      const loadProductos = async () => {
-                 const response = await axios.get('http://localhost:5000/products')
-                 if (response.data.success) {
-                     setProductosBD(response.data.data)
-                 }
-             }
-             loadProductos() */
-        console.log('recording productos', record);
         if (record) {
             form.setFieldValue('Nombre', record.Nombre)
             form.setFieldValue('Descripcion', record.Descripcion)
@@ -64,12 +63,17 @@ const FormProduct = ({ record, onClose }: IProps) => {
             form.setFieldValue('Cantidad_en_stock', record.Cantidad_en_stock)
             form.setFieldValue('permitir_stock_negativo', record.permitir_stock_negativo)
             setObserver(!observer)
+        }else{
+
+            form.resetFields()
+            setObserver(!observer)
+
         }
     }, [record])
 
     return (
         <>
-            <Typography>Producto</Typography>
+            <Typography className='title-form'>Producto</Typography>
             <Form
                 form={form}
                 labelCol={{ span: 24 }}
@@ -80,6 +84,7 @@ const FormProduct = ({ record, onClose }: IProps) => {
                 <Form.Item
                     name={'Nombre'}
                     label={'Producto'}
+                    rules={[{required:true}]}
                 >
                     <Input className='fieldForm' />
 
@@ -87,12 +92,18 @@ const FormProduct = ({ record, onClose }: IProps) => {
                 <Form.Item
                     name={'Descripcion'}
                     label={'Descripcion'}
+                    rules={[{required:true}]}
+
                 >
                     <Input className='fieldForm' />
                 </Form.Item>
                 <Form.Item
                     name={'Precio'}
                     label={'Precio'}
+                    rules={[{required:true},{
+                        validator:validateNumber
+                    }]}
+
                 >
                     <Input className='fieldForm' />
                 </Form.Item>
@@ -100,6 +111,9 @@ const FormProduct = ({ record, onClose }: IProps) => {
 
                     name={'Cantidad_en_stock'}
                     label={'Cantidad en stock'}
+                    rules={[{required:true},{
+                        validator:validateNumber
+                    }]}
                 >
                     <Input onChange={() => {
                         setObserver(!observer)
@@ -115,7 +129,9 @@ const FormProduct = ({ record, onClose }: IProps) => {
                     />
                 </Form.Item>
                 <Form.Item>
-                    <Button htmlType='submit'>Guardar</Button>
+                    <Button loading={loading} className='btn-main1' style={{
+                        width:'100%',
+                    }} htmlType='submit'>Guardar</Button>
                 </Form.Item>
 
             </Form>

@@ -21,15 +21,15 @@
 
 :where(.tab-login).ant-tabs-top > .ant-tabs-nav .ant-tabs-ink-bar,
 :where(.tab-login).ant-tabs-top > div > .ant-tabs-nav .ant-tabs-ink-bar {
-  background:  #7c42df;
+  background:  rgb(230, 230, 1);
 }
 
 .input-login {
   height: 3rem;
 }
 .button-login {
-  background-color: #7c42df;
-  color: white;
+  background-color: yellow;
+  color: black;
   width: 100%;
   border-radius: 9px;
   height: 2.5rem;
@@ -50,18 +50,17 @@
 
 .text-label-tab {
   font-size: 1rem !important;
-  color: white;
+  color: black;
   font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
 .card-login {
   background: rgba(255, 255, 255, 0.2);
   border-radius: 16px;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
+ 
   border: 1px solid rgba(255, 255, 255, 0.3);
   width: 50vw;
+  height: 50vh;
 }
 
 @media (max-width: 985px) {

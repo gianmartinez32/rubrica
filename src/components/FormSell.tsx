@@ -1,8 +1,11 @@
 import { Button, Form, Input, Select, Typography, notification } from 'antd'
 import { useForm } from 'antd/es/form/Form'
 import axios from 'axios'
-import React, { useEffect, useMemo, useState } from 'react'
+import  { useEffect, useMemo, useState } from 'react'
 import Cookies from 'js-cookie';
+import { setearMiles } from '../utils/funcitions';
+import { validateNumber } from '../utils/validations';
+import server from '../utils/server';
 
 
 interface IProps{
@@ -13,6 +16,8 @@ const FormSell = ({record,onClose}:IProps) => {
     const [form] = useForm()
     const [productosBD, setProductosBD] = useState([])
     const [observer, setObserver] = useState(true)
+    const [loading, setLoading] = useState(false)
+
 
     const onFinish = async (fields: any) => {
         try {
@@ -24,12 +29,14 @@ const FormSell = ({record,onClose}:IProps) => {
             const config = {
                 headers: {
                   Authorization: `${token}`,
+                  'content-type': 'application/json',
+                  'Access-Control-Allow-Origin': '*'
                 },
                 withCredentials: true,
               };
 
-            
-            const response = record ?  await  axios.put('http://localhost:5000/update-venta',fields,config) : await  axios.post('http://localhost:5000/create-venta',fields,config)
+              setLoading(true)
+            const response = record ?  await  axios.put(server.HOST+'/update-venta',fields,config) : await  axios.post(server.HOST+'/create-venta',fields,config)
             if(response.data.success){
                 notification.success({
                     message:response.data.message,
@@ -45,6 +52,8 @@ const FormSell = ({record,onClose}:IProps) => {
             notification.error({
                 message:error.response.data.message,
             })
+        } finally{
+            setLoading(false)
         }
     }
 
@@ -65,7 +74,18 @@ const FormSell = ({record,onClose}:IProps) => {
     }, [observer])
     useEffect(() => {
         const loadProductos = async () => {
-            const response = await axios.get('http://localhost:5000/products')
+            const token = Cookies.get('token')
+            const config = {
+                headers: {
+                  Authorization: `${token}`,
+                  'content-type': 'application/json',
+                  'Access-Control-Allow-Origin': '*'
+                },
+                withCredentials: true,
+              };
+
+            const response = await axios.get(server.HOST+'/products',config)
+            console.log(response);
             if (response.data.success) {
                 setProductosBD(response.data.data)
             }
@@ -79,12 +99,15 @@ const FormSell = ({record,onClose}:IProps) => {
             form.setFieldValue('telefono_cliente',record.Telefono_cliente)
             form.setFieldValue('codigo_venta',record.Codigo_venta)
             setObserver(!observer)
+        }else{
+            form.resetFields()
+            setObserver(!observer)
         }
     }, [record])
 
     return (
         <>
-            <Typography>Realizar Venta</Typography>
+            <Typography className='title-form'>Realizar Venta</Typography>
             <Form
                 form={form}
                 labelCol={{ span: 24 }}
@@ -95,6 +118,9 @@ const FormSell = ({record,onClose}:IProps) => {
                 <Form.Item
                     name={'codigo_producto'}
                     label={'Producto'}
+                    rules={[
+                        { 'required':true},
+                    ]}
                 >
                     <Select onChange={() => {
                         setObserver(!observer)
@@ -116,16 +142,24 @@ const FormSell = ({record,onClose}:IProps) => {
 
                     name={'cantidad_vendida'}
                     label={'Cantidad'}
+                    rules={[
+                        { 'required':true},
+                        {
+                            validator:validateNumber
+                        }
+                    ]}
                 >
                     <Input onChange={() => {
                         setObserver(!observer)
                     }} className='fieldForm' />
                 </Form.Item>
                 <Form.Item>
-                    <Typography>total : {total_venta}</Typography>
+                    <Typography className='title-form'>total : ${setearMiles(total_venta)}</Typography>
                 </Form.Item>
                 <Form.Item>
-                    <Button htmlType='submit'>Guardar</Button>
+                    <Button loading={loading} className='btn-main1' style={{
+                        width:'100%',
+                    }} htmlType='submit'>Guardar</Button>
                 </Form.Item>
 
             </Form>

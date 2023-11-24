@@ -1,4 +1,3 @@
-import React from 'react'
 import {Typography, Button} from 'antd'
 import {  useNavigate } from "react-router-dom"
 import { useAuth } from '../../context/AuthContext'
@@ -11,8 +10,7 @@ const Home = () => {
   console.log(authState);
 
   return (
-    <div className='card-user'>
-        
+    <div>
         <Typography className='title-splash'>
             !Bienvenido! {authState.user.user.rol_id == Roles.ADMINISTRADOR ? 'Administrador ' : 'Asesor '} {authState?.user?.user?.nombre}
         </Typography>

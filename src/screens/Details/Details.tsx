@@ -4,6 +4,8 @@ import axios from 'axios'
 import { UserOutlined } from '@ant-design/icons'
 import { useAuth } from "../../context/AuthContext"
 import { useNavigate } from "react-router-dom"
+import Cookies from 'js-cookie';
+import server from "../../utils/server"
 
 
 
@@ -22,12 +24,20 @@ const Details = () => {
   useEffect(() => {
     const getDatos = async () => {
       try {
-        const token = await localStorage.getItem('token')
+        const token = Cookies.get('token')
+        const config = {
+            headers: {
+              Authorization: `${token}`,
+              'content-type': 'application/json',
+              'Access-Control-Allow-Origin': '*'
+            },
+            withCredentials: true,
+          };
         if (token) {
           axios.defaults.headers.common['Authorization'] = token
         }
         setloading(true)
-        const response = await axios.get('http://localhost:5000/user')
+        const response = await axios.get(server.HOST+'/user',config)
         setInfoUser(response.data)
         setloading(false)
 
@@ -49,7 +59,7 @@ const Details = () => {
       <Row justify={'center'} align={'top'} className="card-user">
         <Col xl={23} xxl={23} lg={23} md={23} sm={23} xs={23}>
           <Row align={'top'} justify={'center'} style={{ width: '100%' }}>
-            <Col xl={23} xxl={23} lg={23} md={23} sm={23} xs={23}>
+            <Col xl={23} xxl={23} lg={23} md={23} sm={23} xs={23} style={{display:'flex', justifyContent:'center'}}>
               <UserOutlined style={{
                 fontSize: '7rem'
               }} />
@@ -80,10 +90,10 @@ const Details = () => {
                 {infoUser.correo}
               </Typography>
             </Col>
-            <Col xl={23} xxl={23} lg={23} md={23} sm={23} xs={23}>
+            <Col xl={23} xxl={23} lg={23} md={23} sm={23} xs={23} style={{display:'flex', justifyContent:'center'}}>
               <Button className='btn-main1' onClick={() => navigate('/home')}>Volver</Button>
             </Col>
-            <Col xl={23} xxl={23} lg={23} md={23} sm={23} xs={23}>
+            <Col xl={23} xxl={23} lg={23} md={23} sm={23} xs={23} style={{display:'flex', justifyContent:'center'}}>
               <Button className='btn-main1' onClick={onLogout}>Cerrar sesión</Button>
             </Col>
           </Row>

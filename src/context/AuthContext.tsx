@@ -1,6 +1,7 @@
 import axios from 'axios'
 import Cookies from 'js-cookie';
 import { createContext, useContext, useEffect, useState } from "react";
+import server from '../utils/server';
 
 export interface IAuthProps {
     authState: { token: string | null; authenticated: boolean | null, user?:any }
@@ -22,7 +23,7 @@ export const AuthProvider = ({ children }: any) => {
 
     const onRegister = async (email: string, password: string, nombre:string) => {
         try {
-            const response = await axios.post(`${'http://localhost:5000/signin'}`, { correo:email, contraseña:password, nombre })
+            const response = await axios.post(`${server.HOST+'/signin'}`, { correo:email, contraseña:password, nombre })
             return response
         } catch (error) {
             return { error: true, msg: (error as any).response.data.message }
@@ -30,7 +31,7 @@ export const AuthProvider = ({ children }: any) => {
     }
     const onLogin = async (email: string, password: string) => {
         try {
-            const result = await axios.post(`${'http://localhost:5000/login'}`, {
+            const result = await axios.post(`${server.HOST+'/login'}`, {
                 correo:email,
                 contraseña:password
             })
@@ -58,6 +59,7 @@ export const AuthProvider = ({ children }: any) => {
 
     const onLogout = async () => {
         localStorage.removeItem('token')
+        Cookies.remove('token')
         axios.defaults.headers.common['Authorization'] = ``
         setAuthState({
             authenticated: null,

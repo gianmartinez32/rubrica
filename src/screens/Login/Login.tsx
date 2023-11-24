@@ -18,17 +18,17 @@ const Login = () => {
 
 
     ]
-  return (
-    <Row justify={'center'} align={'top'} className="card-login" >
-                <Col xl={23} xxl={23} lg={23} md={23} sm={23} xs={23}>
-                    <Row align={'top'} justify={'center'}  style={{width:'100%'}}>
-                        <Col xl={23} xxl={23} lg={23} md={23} sm={23} xs={23}>
-                                <Tabs size='large'  style={{ width: '100%', alignSelf: 'center' }}rootClassName='tab-login' items={TabsItem} />
-                        </Col>
-                    </Row>
-                </Col>
-            </Row>
-  )
+    return (
+        <Row justify={'center'} align={'middle'} className="card-login" >
+            <Col xl={23} xxl={23} lg={23} md={23} sm={23} xs={23}>
+                <Row align={'top'} justify={'center'} style={{ width: '100%' }}>
+                    <Col xl={23} xxl={23} lg={23} md={23} sm={23} xs={23}>
+                        <Tabs size='large' style={{ width: '100%', alignSelf: 'center' }} rootClassName='tab-login' items={TabsItem} />
+                    </Col>
+                </Row>
+            </Col>
+        </Row>
+    )
 }
 
 export default Login
