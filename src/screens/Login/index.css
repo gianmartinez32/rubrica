@@ -1,0 +1,71 @@
+.containerLogo {
+  display: flex;
+  justify-content: center;
+}
+
+:where(.tab-login).ant-tabs > .ant-tabs-nav .ant-tabs-nav-wrap,
+:where(.tab-login).ant-tabs > div > .ant-tabs-nav .ant-tabs-nav-wrap {
+  justify-content: space-around !important;
+  font-size: 1rem !important;
+  font-family: monserrat !important;
+  width: 100% !important;
+}
+
+:where(.tab-login).ant-tabs > .ant-tabs-nav .ant-tabs-nav-list,
+:where(.tab-login).ant-tabs > div > .ant-tabs-nav .ant-tabs-nav-list {
+  width: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-evenly;
+}
+
+:where(.tab-login).ant-tabs-top > .ant-tabs-nav .ant-tabs-ink-bar,
+:where(.tab-login).ant-tabs-top > div > .ant-tabs-nav .ant-tabs-ink-bar {
+  background:  #7c42df;
+}
+
+.input-login {
+  height: 3rem;
+}
+.button-login {
+  background-color: #7c42df;
+  color: white;
+  width: 100%;
+  border-radius: 9px;
+  height: 2.5rem;
+}
+.button-login:hover {
+  background-color: #11dbdb;
+  color: white !important;
+  width: 100%;
+  border-radius: 9px;
+  height: 2.5rem;
+}
+
+.btn-forget-password {
+  border: none;
+  padding: 0px;
+  text-decoration: underline !important;
+}
+
+.text-label-tab {
+  font-size: 1rem !important;
+  color: white;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+.card-login {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  width: 50vw;
+}
+
+@media (max-width: 985px) {
+  .card-login {
+   width: 80vw;
+  }
+}
