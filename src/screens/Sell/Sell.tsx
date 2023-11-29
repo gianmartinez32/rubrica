@@ -27,15 +27,8 @@ const Sell = () => {
     const loadSell = async () => {
         try {
             const token = Cookies.get('token')
-            const config = {
-                headers: {
-                    Authorization: `${token}`,
-                    'content-type': 'application/json',
-                    'Access-Control-Allow-Origin': '*'
-                },
-                withCredentials: true,
-            };
-            const response = await axios.get(server.HOST + '/get-ventas', config)
+            axios.defaults.headers.common['Authorization'] = token
+            const response = await axios.get(server.HOST + '/get-ventas')
             if (response.data.success) {
                 handlerSellState('sells', response.data.data.map((venta: any) => ({ ...venta, key: venta.Codigo_venta })))
             } else {
@@ -61,15 +54,8 @@ const Sell = () => {
     const deleteSell = async (id: number) => {
         try {
             const token = Cookies.get('token')
-            const config = {
-                headers: {
-                    Authorization: `${token}`,
-                    'content-type': 'application/json',
-                    'Access-Control-Allow-Origin': '*'
-                },
-                withCredentials: true,
-            };
-            const response = await axios.delete(`${server.HOST}/delete-venta/${id}`, config)
+            axios.defaults.headers.common['Authorization'] = token
+            const response = await axios.delete(`${server.HOST}/delete-venta/${id}`)
             if (response.data.success) {
                 notification.success({
                     message: response.data.message

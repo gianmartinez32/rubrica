@@ -27,17 +27,9 @@ const Product = () => {
     const loadSell = async () => {
         try {
             const token = Cookies.get('token')
-            const config = {
-                headers: {
-                  Authorization: `${token}`,
-                   'content-type': 'application/json',
-                   'Access-Control-Allow-Origin': '*'
-                },
-                withCredentials: true,
-              };
-            const response = await axios.get(server.HOST+'/products', config)
+            axios.defaults.headers.common['Authorization'] = token
+            const response = await axios.get(server.HOST+'/products')
             if (response.data.success) {
-                console.log(response.data.data)
                 handlerSellState('sells', response.data.data.map((venta:any) => ({ ...venta })))
             } else {
                 notification.warning({
@@ -62,7 +54,9 @@ const Product = () => {
 
     const deleteSell = async (id: number) => {
         try {
-            const response = await axios.delete(`${server.HOST}/products/${id}`, { withCredentials: true})
+            const token = Cookies.get('token')
+            axios.defaults.headers.common['Authorization'] = token
+            const response = await axios.delete(`${server.HOST}/products/${id}`)
             if (response.data.success) {
                 notification.success({
                     message: response.data.message

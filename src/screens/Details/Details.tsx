@@ -25,19 +25,9 @@ const Details = () => {
     const getDatos = async () => {
       try {
         const token = Cookies.get('token')
-        const config = {
-            headers: {
-              Authorization: `${token}`,
-              'content-type': 'application/json',
-              'Access-Control-Allow-Origin': '*'
-            },
-            withCredentials: true,
-          };
-        if (token) {
-          axios.defaults.headers.common['Authorization'] = token
-        }
+        axios.defaults.headers.common['Authorization'] = token
         setloading(true)
-        const response = await axios.get(server.HOST+'/user',config)
+        const response = await axios.get(server.HOST+'/user')
         setInfoUser(response.data)
         setloading(false)
 

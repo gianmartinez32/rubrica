@@ -26,17 +26,10 @@ const FormSell = ({record,onClose}:IProps) => {
             if(record) fields.codigo_venta = record.Codigo_venta
 
             const token = Cookies.get('token')
-            const config = {
-                headers: {
-                  Authorization: `${token}`,
-                  'content-type': 'application/json',
-                  'Access-Control-Allow-Origin': '*'
-                },
-                withCredentials: true,
-              };
+            axios.defaults.headers.common['Authorization'] = token
 
               setLoading(true)
-            const response = record ?  await  axios.put(server.HOST+'/update-venta',fields,config) : await  axios.post(server.HOST+'/create-venta',fields,config)
+            const response = record ?  await  axios.put(server.HOST+'/update-venta',fields) : await  axios.post(server.HOST+'/create-venta',fields)
             if(response.data.success){
                 notification.success({
                     message:response.data.message,
@@ -75,23 +68,15 @@ const FormSell = ({record,onClose}:IProps) => {
     useEffect(() => {
         const loadProductos = async () => {
             const token = Cookies.get('token')
-            const config = {
-                headers: {
-                  Authorization: `${token}`,
-                  'content-type': 'application/json',
-                  'Access-Control-Allow-Origin': '*'
-                },
-                withCredentials: true,
-              };
+            axios.defaults.headers.common['Authorization'] = token
 
-            const response = await axios.get(server.HOST+'/products',config)
+            const response = await axios.get(server.HOST+'/products')
             console.log(response);
             if (response.data.success) {
                 setProductosBD(response.data.data)
             }
         }
         loadProductos()
-        console.log('recording productos',record);
         if(record){
             form.setFieldValue('cantidad_vendida',record.Cantidad_vendida)
             form.setFieldValue('codigo_producto',record.Codigo_producto)

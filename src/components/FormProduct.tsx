@@ -1,7 +1,7 @@
-import { Button, Checkbox, Form, Input,  Typography, notification } from 'antd'
+import { Button, Checkbox, Form, Input, Typography, notification } from 'antd'
 import { useForm } from 'antd/es/form/Form'
 import axios from 'axios'
-import  { useEffect,useState } from 'react'
+import { useEffect, useState } from 'react'
 import Cookies from 'js-cookie';
 import { validateNumber } from '../utils/validations';
 import server from '../utils/server';
@@ -23,16 +23,9 @@ const FormProduct = ({ record, onClose }: IProps) => {
                       if(!fields.nombre_cliente) fields.nombre_cliente = 'Consumidor Final' */
             if (record) fields.Codigo = record.Codigo
             const token = Cookies.get('token')
-            const config = {
-                headers: {
-                  Authorization: `${token}`,
-                  'content-type': 'application/json',
-                  'Access-Control-Allow-Origin': '*'
-                },
-                withCredentials: true,
-              };
-              setLoading(true)
-            const response = record ? await axios.put(server.HOST+'/products', fields,config) : await axios.post(server.HOST+'/products', fields, config)
+            axios.defaults.headers.common['Authorization'] = token
+            setLoading(true)
+            const response = record ? await axios.put(server.HOST + '/products', fields) : await axios.post(server.HOST + '/products', fields)
             if (response.data.success) {
                 notification.success({
                     message: response.data.message,
@@ -48,7 +41,7 @@ const FormProduct = ({ record, onClose }: IProps) => {
             notification.error({
                 message: error.response.data.message,
             })
-        } finally{
+        } finally {
             setLoading(false)
         }
     }
@@ -63,7 +56,7 @@ const FormProduct = ({ record, onClose }: IProps) => {
             form.setFieldValue('Cantidad_en_stock', record.Cantidad_en_stock)
             form.setFieldValue('permitir_stock_negativo', record.permitir_stock_negativo)
             setObserver(!observer)
-        }else{
+        } else {
 
             form.resetFields()
             setObserver(!observer)
@@ -84,7 +77,7 @@ const FormProduct = ({ record, onClose }: IProps) => {
                 <Form.Item
                     name={'Nombre'}
                     label={'Producto'}
-                    rules={[{required:true}]}
+                    rules={[{ required: true }]}
                 >
                     <Input className='fieldForm' />
 
@@ -92,7 +85,7 @@ const FormProduct = ({ record, onClose }: IProps) => {
                 <Form.Item
                     name={'Descripcion'}
                     label={'Descripcion'}
-                    rules={[{required:true}]}
+                    rules={[{ required: true }]}
 
                 >
                     <Input className='fieldForm' />
@@ -100,8 +93,8 @@ const FormProduct = ({ record, onClose }: IProps) => {
                 <Form.Item
                     name={'Precio'}
                     label={'Precio'}
-                    rules={[{required:true},{
-                        validator:validateNumber
+                    rules={[{ required: true }, {
+                        validator: validateNumber
                     }]}
 
                 >
@@ -111,8 +104,8 @@ const FormProduct = ({ record, onClose }: IProps) => {
 
                     name={'Cantidad_en_stock'}
                     label={'Cantidad en stock'}
-                    rules={[{required:true},{
-                        validator:validateNumber
+                    rules={[{ required: true }, {
+                        validator: validateNumber
                     }]}
                 >
                     <Input onChange={() => {
@@ -130,7 +123,7 @@ const FormProduct = ({ record, onClose }: IProps) => {
                 </Form.Item>
                 <Form.Item>
                     <Button loading={loading} className='btn-main1' style={{
-                        width:'100%',
+                        width: '100%',
                     }} htmlType='submit'>Guardar</Button>
                 </Form.Item>
 
